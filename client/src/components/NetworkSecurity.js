@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Network, Shield, Activity, AlertTriangle, Eye, Ban } from 'lucide-react';
+import { Network, Activity, AlertTriangle, Eye, Ban } from 'lucide-react';
 
 const NetworkSecurity = ({ socket }) => {
   const [dashboardData, setDashboardData] = useState(null);
