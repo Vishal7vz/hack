@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Users, Share2, Eye, EyeOff } from 'lucide-react';
+import { Lock, Users, Share2 } from 'lucide-react';
 
 const SecureSharing = () => {
   const [stats, setStats] = useState(null);
