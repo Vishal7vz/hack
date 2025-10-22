@@ -36,8 +36,6 @@ const ThreatChart = () => {
   const updateData = () => {
     setData(prev => {
       const newData = [...prev];
-      const lastData = newData[newData.length - 1];
-      
       newData.push({
         time: new Date().toLocaleTimeString('en-US', { 
           hour: '2-digit', 
