@@ -13,21 +13,14 @@ import Navbar from './components/Navbar';
 import './App.css';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({ username: 'Guest', email: 'guest@secureshield.com' });
   const [socket, setSocket] = useState(null);
   const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
-    // Check if user is already authenticated
-    const token = localStorage.getItem('token');
-    if (token) {
-      verifyToken(token);
-    }
-
-  // Initialize socket connection (use env var when deployed)
-  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
-  const newSocket = io(apiUrl);
+    // Initialize socket connection (use env var when deployed)
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const newSocket = io(apiUrl);
     setSocket(newSocket);
 
     // Listen for security alerts
@@ -50,52 +43,10 @@ function App() {
     };
   }, []);
 
-  const verifyToken = async (token) => {
-    try {
-      const response = await fetch('/api/auth/verify', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.user);
-        setIsAuthenticated(true);
-      } else {
-        localStorage.removeItem('token');
-      }
-    } catch (error) {
-      console.error('Token verification failed:', error);
-      localStorage.removeItem('token');
-    }
-  };
-
-  const handleLogin = (userData, token) => {
-    localStorage.setItem('token', token);
-    setUser(userData);
-    setIsAuthenticated(true);
-  };
-
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    setIsAuthenticated(false);
+    // Logout functionality (optional)
+    console.log('Logout clicked');
   };
-
-  if (!isAuthenticated) {
-    return (
-      <Router>
-        <div className="global-grid-bg">
-          <Routes>
-            <Route path="/login" element={<Login onLogin={handleLogin} />} />
-            <Route path="/register" element={<Register onLogin={handleLogin} />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </div>
-      </Router>
-    );
-  }
 
   return (
     <Router>
