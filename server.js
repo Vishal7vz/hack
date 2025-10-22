@@ -49,7 +49,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files
-app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(express.static(path.join(__dirname, 'build')));
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -58,11 +58,11 @@ app.use('/api/security', securityRoutes);
 // Real-time threat monitoring
 io.on('connection', (socket) => {
   console.log('Client connected to security monitoring');
-  
+
   socket.on('subscribe-threats', () => {
     socket.join('threat-monitoring');
   });
-  
+
   socket.on('disconnect', () => {
     console.log('Client disconnected from security monitoring');
   });
@@ -95,7 +95,7 @@ app.get('/api/health', (req, res) => {
 
 // Serve React app
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;

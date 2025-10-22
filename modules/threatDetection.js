@@ -13,25 +13,25 @@ class ThreatDetectionSystem extends EventEmitter {
   initializePatterns() {
     // Common threat patterns and signatures
     this.threatPatterns.set('sql_injection', [
-      /('|(\\')|(;)|(\-\-)|(\/\*)|(\*\/)|(\|)|(\&)|(\%)/i,
+      /('|(\\')|(;)|(\-\-)|(\/\*)|(\*\/)|(\|)|(\&)|(\%))/i,
       /(union|select|insert|update|delete|drop|create|alter)/i,
       /(or|and)\s+\d+\s*=\s*\d+/i
     ]);
-    
+
     this.threatPatterns.set('xss', [
       /<script[^>]*>.*?<\/script>/gi,
       /javascript:/gi,
       /on\w+\s*=/gi,
       /<iframe[^>]*>.*?<\/iframe>/gi
     ]);
-    
+
     this.threatPatterns.set('path_traversal', [
       /\.\.\//g,
       /\.\.\\/g,
       /%2e%2e%2f/gi,
       /%2e%2e%5c/gi
     ]);
-    
+
     this.threatPatterns.set('command_injection', [
       /[;&|`$]/,
       /(rm|del|format|shutdown|reboot|halt)/i,
@@ -45,7 +45,7 @@ class ThreatDetectionSystem extends EventEmitter {
       await this.loadModel();
       this.isActive = true;
       console.log('✅ AI Threat Detection System initialized');
-      
+
       // Start continuous monitoring
       this.startMonitoring();
     } catch (error) {
@@ -58,8 +58,8 @@ class ThreatDetectionSystem extends EventEmitter {
     this.model = {
       predict: async (features) => {
         // Simulate ML prediction based on traffic patterns
-        const data = await features.data();
-        const suspiciousness = Math.random() * 0.3 + 
+        const data = features.data();
+        const suspiciousness = Math.random() * 0.3 +
           (data[2] > 0.05 ? 0.3 : 0) + // High error rate
           (data[5] > 0.5 ? 0.2 : 0) +  // Suspicious requests
           (data[9] > 0.8 ? 0.2 : 0);   // High resource usage
@@ -78,7 +78,7 @@ class ThreatDetectionSystem extends EventEmitter {
   async performRandomScan() {
     const mockData = this.generateMockTrafficData();
     const threatLevel = await this.analyzeTraffic(mockData);
-    
+
     if (threatLevel > this.anomalyThreshold) {
       this.emit('threatDetected', {
         type: 'anomaly',
@@ -128,14 +128,15 @@ class ThreatDetectionSystem extends EventEmitter {
       ]
     };
 
-    const prediction = await this.model.predict(features).data();
-    
-    return prediction[0];
+    const prediction = await this.model.predict(features);
+    const predictionData = await prediction.data();
+
+    return predictionData[0];
   }
 
   analyzeRequest(request) {
     const threats = [];
-    
+
     // Check for various attack patterns
     for (const [threatType, patterns] of this.threatPatterns) {
       for (const pattern of patterns) {
@@ -178,7 +179,7 @@ class ThreatDetectionSystem extends EventEmitter {
 
   getRecommendations(threats) {
     const recommendations = [];
-    
+
     threats.forEach(threat => {
       switch (threat.type) {
         case 'sql_injection':
