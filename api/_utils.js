@@ -13,5 +13,9 @@ exports.parseJsonBody = async (req) => {
 exports.sendJson = (res, status, data) => {
   res.status(status);
   res.setHeader('Content-Type', 'application/json');
+  // Prevent caching of API responses to avoid 304 with empty bodies on fetch
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.end(JSON.stringify(data));
 };
