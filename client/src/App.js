@@ -18,29 +18,62 @@ function App() {
   const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
-    // Initialize socket connection (use env var when deployed)
-    const apiUrl = process.env.REACT_APP_API_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5000');
-    const newSocket = io(apiUrl);
-    setSocket(newSocket);
+    const useEdgeWS = process.env.REACT_APP_EDGE_WS === '1';
+    if (typeof window === 'undefined') return;
+    if (useEdgeWS) {
+      const wsProto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+      const wsUrl = `${wsProto}://${window.location.host}/api/ws?channel=security`;
+      const ws = new WebSocket(wsUrl);
 
-    // Listen for security alerts
-    newSocket.on('securityAlert', (alert) => {
-      setAlerts(prev => [alert, ...prev.slice(0, 9)]); // Keep last 10 alerts
-    });
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg.type === 'message' && msg.payload) {
+            const payload = msg.payload;
+            if (payload.type === 'securityAlert') {
+              setAlerts(prev => [payload.data, ...prev.slice(0, 9)]);
+            } else if (payload.type === 'threatAlert') {
+              const threat = payload.data || {};
+              setAlerts(prev => [{
+                type: 'threat_detected',
+                severity: 'high',
+                message: `Threat detected: ${threat.type}`,
+                details: threat,
+                timestamp: new Date().toISOString()
+              }, ...prev.slice(0, 9)]);
+            }
+          }
+        } catch {}
+      };
 
-    newSocket.on('threatAlert', (threat) => {
-      setAlerts(prev => [{
-        type: 'threat_detected',
-        severity: 'high',
-        message: `Threat detected: ${threat.type}`,
-        details: threat,
-        timestamp: new Date().toISOString()
-      }, ...prev.slice(0, 9)]);
-    });
+      return () => {
+        try { ws.close(); } catch {}
+      };
+    } else {
+      // Initialize socket.io connection (same-origin in prod, localhost in dev)
+      const apiUrl = process.env.REACT_APP_API_URL || window.location.origin || 'http://localhost:5000';
+      const newSocket = io(apiUrl);
+      setSocket(newSocket);
 
-    return () => {
-      newSocket.close();
-    };
+      // Listen for security alerts
+      newSocket.on('securityAlert', (alert) => {
+        setAlerts(prev => [alert, ...prev.slice(0, 9)]); // Keep last 10 alerts
+      });
+
+      newSocket.on('threatAlert', (threat) => {
+        setAlerts(prev => [{
+          type: 'threat_detected',
+          severity: 'high',
+          message: `Threat detected: ${threat.type}`,
+          details: threat,
+          timestamp: new Date().toISOString()
+        }, ...prev.slice(0, 9)]);
+      });
+
+      return () => {
+        newSocket.close();
+      };
+    }
   }, []);
 
   const handleLogout = () => {
