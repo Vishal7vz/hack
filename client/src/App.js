@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import Dashboard from './components/Dashboard';
-import Login from './components/Login';
-import Register from './components/Register';
+// import Login from './components/Login';
+// import Register from './components/Register';
 import ThreatDetection from './components/ThreatDetection';
 import SecureSharing from './components/SecureSharing';
 import Web3Identity from './components/Web3Identity';
@@ -13,7 +13,7 @@ import Navbar from './components/Navbar';
 import './App.css';
 
 function App() {
-  const [user, setUser] = useState({ username: 'Guest', email: 'guest@secureshield.com' });
+  const [user] = useState({ username: 'Guest', email: 'guest@secureshield.com' });
   const [socket, setSocket] = useState(null);
   const [alerts, setAlerts] = useState([]);
 
