@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Copy, RefreshCw, Eye, EyeOff, Shield, Lock, Key, History, BarChart3 } from 'lucide-react';
+import { apiFetch } from '../utils/api';
 
 const PasswordGenerator = () => {
   const [password, setPassword] = useState('');
@@ -52,7 +53,7 @@ const PasswordGenerator = () => {
 
   const loadHistory = async () => {
     try {
-      const response = await fetch('/api/security/passwords/history');
+      const response = await apiFetch('/api/security/passwords/history');
       if (response.ok) {
         const data = await response.json();
         setHistory(data.history || []);
@@ -69,7 +70,7 @@ const PasswordGenerator = () => {
 
   const loadStats = async () => {
     try {
-      const response = await fetch('/api/security/passwords/stats');
+      const response = await apiFetch('/api/security/passwords/stats');
       if (response.ok) {
         const data = await response.json();
         setStats(data.stats || {});
@@ -114,7 +115,7 @@ const PasswordGenerator = () => {
           separator: memorableOptions.separator || '-',
           includeNumbers: Boolean(memorableOptions.includeNumbers)
         };
-        response = await fetch('/api/security/passwords/generate-memorable', {
+        response = await apiFetch('/api/security/passwords/generate-memorable', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -131,7 +132,7 @@ const PasswordGenerator = () => {
           minSymbols: Math.max(0, Math.min(10, requirements.minSymbols)),
           maxConsecutive: Math.max(1, Math.min(10, requirements.maxConsecutive))
         };
-        response = await fetch('/api/security/passwords/generate-requirements', {
+        response = await apiFetch('/api/security/passwords/generate-requirements', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -150,7 +151,7 @@ const PasswordGenerator = () => {
           customSymbols: String(options.customSymbols || ''),
           excludeCharacters: String(options.excludeCharacters || '')
         };
-        response = await fetch('/api/security/passwords/generate', {
+        response = await apiFetch('/api/security/passwords/generate', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

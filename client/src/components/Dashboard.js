@@ -14,6 +14,7 @@ import SecurityOverview from './SecurityOverview';
 import ThreatChart from './ThreatChart';
 import NetworkChart from './NetworkChart';
 import RecentAlerts from './RecentAlerts';
+import { apiFetch } from '../utils/api';
 
 const Dashboard = ({ socket }) => {
   const [overview, setOverview] = useState(null);
@@ -55,7 +56,7 @@ const Dashboard = ({ socket }) => {
 
   const fetchOverview = async () => {
     try {
-      const response = await fetch('/api/security/overview');
+      const response = await apiFetch('/api/security/overview');
       const data = await response.json();
       setOverview(data);
       setLoading(false);

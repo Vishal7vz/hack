@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Network, Activity, AlertTriangle, Eye, Ban } from 'lucide-react';
+import { apiFetch } from '../utils/api';
 
 const NetworkSecurity = ({ socket }) => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -37,7 +38,7 @@ const NetworkSecurity = ({ socket }) => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch('/api/security/network/dashboard');
+      const response = await apiFetch('/api/security/network/dashboard');
       const data = await response.json();
       setDashboardData(data);
       setLoading(false);
@@ -49,7 +50,7 @@ const NetworkSecurity = ({ socket }) => {
 
   const fetchReport = async () => {
     try {
-      const response = await fetch('/api/security/network/report');
+      const response = await apiFetch('/api/security/network/report');
       const data = await response.json();
       setReport(data);
     } catch (error) {
@@ -59,7 +60,7 @@ const NetworkSecurity = ({ socket }) => {
 
   const fetchBlockedIPs = async () => {
     try {
-      const response = await fetch('/api/security/network/blocked-ips');
+      const response = await apiFetch('/api/security/network/blocked-ips');
       const data = await response.json();
       setBlockedIPs(data.blockedIPs || []);
     } catch (error) {
@@ -71,7 +72,7 @@ const NetworkSecurity = ({ socket }) => {
     if (!newBlockIP.trim()) return;
     
     try {
-      const response = await fetch('/api/security/network/block-ip', {
+      const response = await apiFetch('/api/security/network/block-ip', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -91,7 +92,7 @@ const NetworkSecurity = ({ socket }) => {
 
   const unblockIP = async (ip) => {
     try {
-      const response = await fetch('/api/security/network/unblock-ip', {
+      const response = await apiFetch('/api/security/network/unblock-ip', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

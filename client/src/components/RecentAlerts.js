@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Clock, X } from 'lucide-react';
+import { apiFetch } from '../utils/api';
 
 const RecentAlerts = ({ socket }) => {
   const [alerts, setAlerts] = useState([]);
@@ -17,7 +18,7 @@ const RecentAlerts = ({ socket }) => {
 
   const fetchAlerts = async () => {
     try {
-      const response = await fetch('/api/security/alerts');
+      const response = await apiFetch('/api/security/alerts');
       const data = await response.json();
       setAlerts(data);
       setLoading(false);

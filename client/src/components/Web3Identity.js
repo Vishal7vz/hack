@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Shield, Key, CheckCircle, XCircle } from 'lucide-react';
+import { apiFetch } from '../utils/api';
 
 const Web3Identity = () => {
   const [stats, setStats] = useState(null);
@@ -19,7 +20,7 @@ const Web3Identity = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/security/identity/stats');
+      const response = await apiFetch('/api/security/identity/stats');
       const data = await response.json();
       setStats(data);
       setLoading(false);
@@ -31,7 +32,7 @@ const Web3Identity = () => {
 
   const fetchIdentities = async () => {
     try {
-      const response = await fetch('/api/security/identity');
+      const response = await apiFetch('/api/security/identity');
       const data = await response.json();
       setIdentities(data);
     } catch (error) {
@@ -41,7 +42,7 @@ const Web3Identity = () => {
 
   const createIdentity = async () => {
     try {
-      const response = await fetch('/api/security/identity/create', {
+      const response = await apiFetch('/api/security/identity/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

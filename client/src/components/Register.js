@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, Eye, EyeOff } from 'lucide-react';
+import { apiFetch } from '../utils/api';
 
 const Register = ({ onLogin }) => {
   const [formData, setFormData] = useState({
@@ -39,7 +40,7 @@ const Register = ({ onLogin }) => {
     }
 
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await apiFetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

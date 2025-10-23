@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, Users, Share2 } from 'lucide-react';
+import { apiFetch } from '../utils/api';
 
 const SecureSharing = () => {
   const [stats, setStats] = useState(null);
@@ -19,7 +20,7 @@ const SecureSharing = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/security/sharing/stats');
+      const response = await apiFetch('/api/security/sharing/stats');
       const data = await response.json();
       setStats(data);
       setLoading(false);
@@ -31,7 +32,7 @@ const SecureSharing = () => {
 
   const createSession = async () => {
     try {
-      const response = await fetch('/api/security/sharing/create-session', {
+      const response = await apiFetch('/api/security/sharing/create-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
