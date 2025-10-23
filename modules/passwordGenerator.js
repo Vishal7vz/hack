@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const path = require('path');
 const EventEmitter = require('events');
 
 class PasswordGenerator extends EventEmitter {
@@ -29,20 +30,20 @@ class PasswordGenerator extends EventEmitter {
     } = options;
 
     let charset = '';
-    
+
     // Build character set based on options
     if (includeLowercase) {
       charset += 'abcdefghijklmnopqrstuvwxyz';
     }
-    
+
     if (includeUppercase) {
       charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     }
-    
+
     if (includeNumbers) {
       charset += '0123456789';
     }
-    
+
     if (includeSymbols) {
       if (customSymbols) {
         charset += customSymbols;
@@ -80,7 +81,7 @@ class PasswordGenerator extends EventEmitter {
 
     // Calculate password strength
     const strength = this.calculatePasswordStrength(password, options);
-    
+
     // Store in history
     this.addToHistory({
       password,
@@ -169,7 +170,7 @@ class PasswordGenerator extends EventEmitter {
   hasSequentialPattern(password) {
     const sequences = ['0123456789', 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
     const reversed = sequences.map(s => s.split('').reverse().join(''));
-    
+
     for (const seq of [...sequences, ...reversed]) {
       for (let i = 0; i <= seq.length - 3; i++) {
         if (password.toLowerCase().includes(seq.substring(i, i + 3))) {
@@ -190,7 +191,7 @@ class PasswordGenerator extends EventEmitter {
       /123456/i,
       /letmein/i
     ];
-    
+
     return commonPatterns.some(pattern => pattern.test(password));
   }
 
@@ -230,12 +231,12 @@ class PasswordGenerator extends EventEmitter {
       };
 
       const result = this.generatePassword(options);
-      
+
       // Check if password meets all requirements
       if (this.validatePasswordRequirements(result.password, requirements)) {
         return result;
       }
-      
+
       attempts++;
     }
 
@@ -256,7 +257,7 @@ class PasswordGenerator extends EventEmitter {
 
     if (minLength && password.length < minLength) return false;
     if (maxLength && password.length > maxLength) return false;
-    
+
     if (minUppercase && (password.match(/[A-Z]/g) || []).length < minUppercase) return false;
     if (minLowercase && (password.match(/[a-z]/g) || []).length < minLowercase) return false;
     if (minNumbers && (password.match(/[0-9]/g) || []).length < minNumbers) return false;
@@ -315,8 +316,8 @@ class PasswordGenerator extends EventEmitter {
     const randomSymbol = symbols[crypto.randomInt(0, symbols.length)];
     password += randomSymbol;
 
-    const strength = this.calculatePasswordStrength(password);
-    
+    const strength = this.calculatePasswordStrength(password, {});
+
     this.addToHistory({
       password,
       options: { type: 'memorable', wordCount, separator, includeNumbers },

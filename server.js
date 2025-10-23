@@ -84,11 +84,11 @@ app.get('/api/health', (req, res) => {
     status: 'healthy',
     timestamp: new Date().toISOString(),
     services: {
-      threatDetection: threatDetection.isActive(),
-      networkSecurity: networkSecurity.isActive(),
-      secureSharing: secureSharing.isActive(),
-      web3Identity: web3Identity.isActive(),
-      passwordGenerator: passwordGenerator.isActive()
+      threatDetection: threatDetection.isActive,
+      networkSecurity: networkSecurity.isActive,
+      secureSharing: secureSharing.isActive,
+      web3Identity: web3Identity.isActive,
+      passwordGenerator: passwordGenerator.isActive
     }
   });
 });

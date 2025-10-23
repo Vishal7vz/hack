@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const path = require('path');
 const EventEmitter = require('events');
 
 class SecureSharingProtocol extends EventEmitter {
@@ -30,14 +31,14 @@ class SecureSharingProtocol extends EventEmitter {
   encryptData(data, key) {
     try {
       const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipher(this.encryptionAlgorithm, key);
+      const cipher = crypto.createCipheriv(this.encryptionAlgorithm, key, iv);
       cipher.setAAD(Buffer.from('secureshield', 'utf8'));
-      
+
       let encrypted = cipher.update(JSON.stringify(data), 'utf8', 'hex');
       encrypted += cipher.final('hex');
-      
+
       const authTag = cipher.getAuthTag();
-      
+
       return {
         encrypted,
         iv: iv.toString('hex'),
@@ -52,17 +53,19 @@ class SecureSharingProtocol extends EventEmitter {
   // Decrypt data
   decryptData(encryptedData, key) {
     try {
-      const decipher = crypto.createDecipher(
-        encryptedData.algorithm, 
-        key
+      const iv = Buffer.from(encryptedData.iv, 'hex');
+      const decipher = crypto.createDecipheriv(
+        encryptedData.algorithm,
+        key,
+        iv
       );
-      
+
       decipher.setAAD(Buffer.from('secureshield', 'utf8'));
       decipher.setAuthTag(Buffer.from(encryptedData.authTag, 'hex'));
-      
+
       let decrypted = decipher.update(encryptedData.encrypted, 'hex', 'utf8');
       decrypted += decipher.final('utf8');
-      
+
       return JSON.parse(decrypted);
     } catch (error) {
       throw new Error(`Decryption failed: ${error.message}`);
@@ -74,11 +77,11 @@ class SecureSharingProtocol extends EventEmitter {
     const sessionId = crypto.randomUUID();
     const password = options.password || crypto.randomBytes(32).toString('hex');
     const salt = this.generateSalt();
-    const key = this.generateKey(password, salt);
-    
+    const key = Buffer.from(this.generateKey(password, salt));
+
     // Encrypt the data
     const encryptedData = this.encryptData(data, key);
-    
+
     // Create session metadata
     const session = {
       id: sessionId,
@@ -153,7 +156,7 @@ class SecureSharingProtocol extends EventEmitter {
 
     // Decrypt and return data
     const decryptedData = this.decryptData(session.encryptedData, key);
-    
+
     this.emit('dataAccessed', {
       sessionId,
       participantId,
@@ -200,11 +203,11 @@ class SecureSharingProtocol extends EventEmitter {
   async shareFile(filePath, participants, options = {}) {
     const fs = require('fs').promises;
     const fileData = await fs.readFile(filePath);
-    
+
     // Split file into chunks for better security
     const chunkSize = options.chunkSize || 1024 * 1024; // 1MB chunks
     const chunks = [];
-    
+
     for (let i = 0; i < fileData.length; i += chunkSize) {
       chunks.push(fileData.slice(i, i + chunkSize));
     }
@@ -221,7 +224,7 @@ class SecureSharingProtocol extends EventEmitter {
         data: chunks[i].toString('base64'),
         totalChunks: chunks.length
       };
-      
+
       const encryptedChunk = this.encryptData(chunkData, key);
       encryptedChunks.push(encryptedChunk);
     }
