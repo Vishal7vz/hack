@@ -39,6 +39,15 @@ const NetworkSecurity = ({ socket }) => {
   const fetchDashboardData = async () => {
     try {
       const response = await apiFetch('/api/security/network/dashboard');
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
+      }
+      const ct = response.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Expected JSON, got: ${text.slice(0, 200)}`);
+      }
       const data = await response.json();
       setDashboardData(data);
       setLoading(false);
@@ -51,6 +60,15 @@ const NetworkSecurity = ({ socket }) => {
   const fetchReport = async () => {
     try {
       const response = await apiFetch('/api/security/network/report');
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
+      }
+      const ct = response.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Expected JSON, got: ${text.slice(0, 200)}`);
+      }
       const data = await response.json();
       setReport(data);
     } catch (error) {
@@ -61,6 +79,15 @@ const NetworkSecurity = ({ socket }) => {
   const fetchBlockedIPs = async () => {
     try {
       const response = await apiFetch('/api/security/network/blocked-ips');
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
+      }
+      const ct = response.headers.get('content-type') || '';
+      if (!ct.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Expected JSON, got: ${text.slice(0, 200)}`);
+      }
       const data = await response.json();
       setBlockedIPs(data.blockedIPs || []);
     } catch (error) {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Shield, Eye, Zap, Activity } from 'lucide-react';
+import { apiFetch } from '../utils/api';
 
 const ThreatDetection = ({ socket }) => {
   const [stats, setStats] = useState(null);
@@ -23,7 +24,7 @@ const ThreatDetection = ({ socket }) => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch('/api/security/threats/stats');
+      const response = await apiFetch('/api/security/threats/stats');
       const data = await response.json();
       setStats(data);
       setLoading(false);
@@ -35,7 +36,7 @@ const ThreatDetection = ({ socket }) => {
 
   const analyzeRequest = async () => {
     try {
-      const response = await fetch('/api/security/threats/analyze', {
+      const response = await apiFetch('/api/security/threats/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
